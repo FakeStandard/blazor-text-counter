@@ -1,9 +1,73 @@
 ﻿@page "/"
+@using System.Text.RegularExpressions;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Calculate the number of words</PageTitle>
 
-<h1>Hello, world!</h1>
+<form>
+    <div class="form-group row pt-1 pb-1">
+        <label class="col-form-label">請輸入任意文字</label>
+    </div>
+    <div class="form-group row pt-1 pb-1">
+        <input type="text" class="form-control" @bind=@txt placeholder="Please enter any text" />
+    </div>
+    <div class="form-group row pt-4 pb-5">
+        <div class="text-center">
+            <button type="button" class="btn btn-outline-dark" @onclick="InputChange">Calculate</button>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-header">
+            計算結果
+        </div>
+        <div class="card-body">
+            <div class="row px-5">
+                <label class="col-form-label col-6" style="color:red;">總字數<br/>(含標點符號)</label>
+                <label class="col-form-label col-6" style="color:red;">@total</label>
+            </div>
+            <div class="row px-5">
+                <label class="col-form-label col-6">英文字數</label>
+                <label class="col-form-label col-6">@en_len</label>
+            </div>
+            <div class="row px-5">
+                <label class="col-form-label col-6">中文字數</label>
+                <label class="col-form-label col-6">@ch_len</label>
+            </div>
+            <div class="row px-5">
+                <label class="col-form-label col-6">數字字數</label>
+                <label class="col-form-label col-6">@num_len</label>
+            </div>
+        </div>
+    </div>
+</form>
 
-Welcome to your new app.
+@code {
+    public string txt { get; set; }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    public int total { get; set; } = 0;
+    public int en_len { get; set; } = 0;
+    public int ch_len { get; set; } = 0;
+    public int num_len { get; set; } = 0;
+
+    public void InputChange()
+    {
+        total = txt.Length;
+
+        en_len = 0;
+        ch_len = 0;
+        num_len = 0;
+
+        Regex en_regex = new Regex("[a-zA-Z]");
+        Regex ch_regex = new Regex("[\u4E00-\u9FA5]");
+        Regex num_regex = new Regex("[0-9]");
+
+        foreach (char str in txt)
+        {
+            if (en_regex.IsMatch(str.ToString()))
+                en_len++;
+            else if (ch_regex.IsMatch(str.ToString()))
+                ch_len++;
+            else if (num_regex.IsMatch(str.ToString()))
+                num_len++;
+        }
+    }
+}
